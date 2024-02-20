@@ -3,7 +3,7 @@
   "displayName": "Vim",
   "description": "Vim emulation for Visual Studio Code",
   "icon": "images/icon.png",
-  "version": "1.27.9",
+  "version": "1.27.10",
   "publisher": "vscodevim",
   "galleryBanner": {
     "color": "#e3f4ff",
@@ -56,6 +56,14 @@
       {
         "command": "vim.listAllActions",
         "title": "Vim: List All Actions"
+      },
+      {
+        "command": "vim.sendKey",
+        "title": "Vim: Send Key"
+      },
+      {
+        "command": "vim.sendKeys",
+        "title": "Vim: Send Keys"
       },
       {
         "command": "vim.showQuickpickCmdLine",

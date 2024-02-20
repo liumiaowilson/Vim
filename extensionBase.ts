@@ -432,28 +432,51 @@ export async function activate(context: vscode.ExtensionContext, handleLocal: bo
     });
   });
 
-  const disposable = vscode.commands.registerCommand('vim.listAllActions', async (args) => {
-    const output: string[] = [];
-    actionMap.forEach((actions, mode) => {
-      const modeName = Mode[mode];
-      for (const actionType of actions) {
-        const action = new actionType();
-        const actionName = action.constructor.name;
-        const isNestedArray = Array.isArray(action.keys[0]);
-        const keys = isNestedArray
-          ? action.keys.map((key) => (key as string[]).join('+')).join(', ')
-          : action.keys.join('+');
-        output.push(`[${modeName}] ${actionName}: ${keys}`);
-      }
-    });
+  const disposables = [];
 
-    const doc = await vscode.workspace.openTextDocument({
-      content: output.join('\n'),
-      language: 'text',
-    });
-    await vscode.window.showTextDocument(doc);
-  });
-  context.subscriptions.push(disposable);
+  disposables.push(
+    vscode.commands.registerCommand('vim.listAllActions', async (args) => {
+      const output: string[] = [];
+      actionMap.forEach((actions, mode) => {
+        const modeName = Mode[mode];
+        for (const actionType of actions) {
+          const action = new actionType();
+          const actionName = action.constructor.name;
+          const isNestedArray = Array.isArray(action.keys[0]);
+          const keys = isNestedArray
+            ? action.keys.map((key) => (key as string[]).join('+')).join(', ')
+            : action.keys.join('+');
+          output.push(`[${modeName}] ${actionName}: ${keys}`);
+        }
+      });
+
+      const doc = await vscode.workspace.openTextDocument({
+        content: output.join('\n'),
+        language: 'text',
+      });
+      await vscode.window.showTextDocument(doc);
+    }),
+  );
+
+  disposables.push(
+    vscode.commands.registerCommand('vim.sendKey', async (key: string) => {
+      const mh = await getAndUpdateModeHandler();
+      if (mh) {
+        await mh.handleKeyEvent(key);
+      }
+    }),
+  );
+
+  disposables.push(
+    vscode.commands.registerCommand('vim.sendKeys', async (keys: string) => {
+      const mh = await getAndUpdateModeHandler();
+      if (mh) {
+        await mh.handleMultipleKeyEvents(keys.split(''));
+      }
+    }),
+  );
+
+  context.subscriptions.concat(disposables);
 
   // Register extension commands
   registerCommand(context, 'vim.showQuickpickCmdLine', async () => {
