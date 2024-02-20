@@ -241,7 +241,7 @@ export enum KeypressState {
 /**
  * Every Vim action will be added here with the @RegisterAction decorator.
  */
-const actionMap = new Map<Mode, Array<new () => BaseAction>>();
+export const actionMap = new Map<Mode, Array<new () => BaseAction>>();
 
 /**
  * Gets the action that should be triggered given a key sequence.

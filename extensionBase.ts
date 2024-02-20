@@ -17,6 +17,7 @@ import { Logger } from './src/util/logger';
 import { SpecialKeys } from './src/util/specialKeys';
 import { VSCodeContext } from './src/util/vscodeContext';
 import { exCommandParser } from './src/vimscript/exCommandParser';
+import { actionMap } from './src/actions/base';
 
 let extensionContext: vscode.ExtensionContext;
 let previousActiveEditorUri: vscode.Uri | undefined;
@@ -430,6 +431,29 @@ export async function activate(context: vscode.ExtensionContext, handleLocal: bo
       compositionState.reset();
     });
   });
+
+  const disposable = vscode.commands.registerCommand('vim.listAllActions', async (args) => {
+    const output: string[] = [];
+    actionMap.forEach((actions, mode) => {
+      const modeName = Mode[mode];
+      for (const actionType of actions) {
+        const action = new actionType();
+        const actionName = action.constructor.name;
+        const isNestedArray = Array.isArray(action.keys[0]);
+        const keys = isNestedArray
+          ? action.keys.map((key) => (key as string[]).join('+')).join(', ')
+          : action.keys.join('+');
+        output.push(`[${modeName}] ${actionName}: ${keys}`);
+      }
+    });
+
+    const doc = await vscode.workspace.openTextDocument({
+      content: output.join('\n'),
+      language: 'text',
+    });
+    await vscode.window.showTextDocument(doc);
+  });
+  context.subscriptions.push(disposable);
 
   // Register extension commands
   registerCommand(context, 'vim.showQuickpickCmdLine', async () => {

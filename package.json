@@ -3,7 +3,7 @@
   "displayName": "Vim",
   "description": "Vim emulation for Visual Studio Code",
   "icon": "images/icon.png",
-  "version": "1.27.7",
+  "version": "1.27.9",
   "publisher": "vscodevim",
   "galleryBanner": {
     "color": "#e3f4ff",
@@ -52,6 +52,10 @@
       {
         "command": "toggleVim",
         "title": "Vim: Toggle Vim Mode"
+      },
+      {
+        "command": "vim.listAllActions",
+        "title": "Vim: List All Actions"
       },
       {
         "command": "vim.showQuickpickCmdLine",
